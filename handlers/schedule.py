@@ -15,7 +15,8 @@ current_date = datetime.now()
 today_date = current_date.strftime(f'%d %m %Y')
 today_date = today_date[:3] + month_list[int(today_date[3:5]) - 1] + today_date[5:]
 
-async def start_cmd_handler(message: types.Message):
+@dp.message_handler(commands=["schedule"])
+async def start_schedule_handler(message: types.Message):
 	keyboard_markup = types.InlineKeyboardMarkup(row_width=2)
 	text_and_data = (
 		('Понедельник', 'Понедельник'),
@@ -27,22 +28,22 @@ async def start_cmd_handler(message: types.Message):
 		('Воскресенье', 'Воскресенье'),
 		('Неделя', 'Неделя'),
 	)
-	row_btns = (types.InlineKeyboardButton(text, callback_data=data) for text, data in text_and_data)
+	row_btns = (types.InlineKeyboardButton(text, callback_data=f"day:{data}") for text, data in text_and_data)
 	keyboard_markup.add(*row_btns)
 
 	await message.reply(f"Сегодня: {today_date} - {week_day[datetime.weekday(current_date)]} 📅\nТренировки на неделю:", reply_markup=keyboard_markup)
 
 
-@dp.callback_query_handler()
+@dp.callback_query_handler(lambda c: c.data.startswith('day:'))
 async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
-	answer_data = query.data
+	answer_data = query.data[4:]
 	await query.answer(f'{answer_data}')
 	try:
 		result = await datawork.schedule_get(answer_data)
 		text = await text_create(result, answer_data)
 	except Exception as exp:
 		print(exp)
-		text = f'Unexpected callback data {answer_data!r}!'
+		text = f'В этот день у нас тренировок нет🤗'
 
 	await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html")
 	await menu.menu_cmd(query.message)
