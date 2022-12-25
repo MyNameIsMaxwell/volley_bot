@@ -26,11 +26,38 @@ class Schedule(Model):
     class Meta:
         database = datab
 
+class Location(Model):
+    short_name = CharField()
+    street = CharField(null=False)
+    photo = CharField(null=False)
+    map_location_url = CharField(null=False)
+
+    class Meta:
+        database = datab
+
+class Coach(Model):
+    name = CharField(null=False)
+    photo = CharField(null=False)
+    descr = TextField(null=False)
+
+    class Meta:
+        database = datab
+
+class Price(Model):
+    name = CharField(null=False)
+    photo = CharField(null=False)
+    descr = TextField(null=False)
+
+    class Meta:
+        database = datab
+
 cur = datab.cursor()
 
 def create_tables():
     Users.create_table()
     Schedule.create_table()
+    Location.create_table()
+    Coach.create_table()
 
 @logger.catch()
 async def add_user(message):
@@ -65,3 +92,32 @@ async def schedule_get(week_day_value):
         day_info['place'] = schedule_info.place
         schedule_list.append(day_info)
     return schedule_list
+
+async def locations_get(id_value=0):
+    locations_list = []
+    if id_value:
+        location_info = Location.select().where(Location.id == id_value)
+    else:
+        location_info = Location.select()
+    for location in location_info:
+        location_dict = {}
+        location_dict["id"] = location.id
+        location_dict["name"] = location.short_name
+        location_dict["street_name"] = location.street
+        location_dict["photo"] = location.photo
+        location_dict["map_location"] = location.map_location_url
+        locations_list.append(location_dict)
+    return locations_list
+
+def coaches_get():
+    coaches_list = []
+    coaches_info = Coach.select()
+    for coach in coaches_info:
+        coaches_dict = {}
+        coaches_dict["id"] = coach.id
+        coaches_dict["name"] = coach.name
+        coaches_dict["photo"] = coach.photo
+        coaches_dict["description"] = coach.descr
+        coaches_list.append(coaches_dict)
+    return coaches_list
+
