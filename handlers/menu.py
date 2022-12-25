@@ -7,9 +7,12 @@ async def menu_cmd(message: types.Message):
 	keyboard_markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
 	item1 = types.KeyboardButton("Расписание📆")
 	item2 = types.KeyboardButton('Тренера🧙')
-	item3 = types.KeyboardButton("Помощь⚙")
+	item3 = types.KeyboardButton("Расположение залов🗺")
+	item4 = types.KeyboardButton("Прайс-лист💸")
+	item5 = types.KeyboardButton("Помощь⚙")
 	keyboard_markup.row(item1)
 	keyboard_markup.row(item2, item3)
+	keyboard_markup.row(item4, item5)
 
 	await message.answer("Выберите вариант:⤵️", reply_markup=keyboard_markup)
 	# more_btns_text = (
