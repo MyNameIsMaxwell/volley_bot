@@ -9,10 +9,10 @@ else:
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 DEFAULT_COMMANDS = (
+    ('trial_lesson', "Записаться на тренировку🏃"),
     ('schedule', "Расписание тренировок на неделю📆"),
-    ('coaches', "Наши тренера🧙"),
-    ('gyms_location', "Месторасположение залов🗺"),
     ('price_list', "Прайс-лист💸"),
+    ('about_us', "О нас👨‍👩‍👧‍👦"),
     ('help', "Вывести справку🏐")
 )
 LOG_PATH = os.path.abspath(os.path.join('utils', 'logs.log'))
