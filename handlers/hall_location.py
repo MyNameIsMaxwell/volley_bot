@@ -12,11 +12,11 @@ async def start_location_handler(message: types.Message):
 	row_btns = (types.InlineKeyboardButton(text["name"], callback_data=f'gym_id:{index+1}') for index, text in enumerate(locations_info))
 	keyboard_markup.add(*row_btns)
 
-	await message.reply(f"Выберите интересующую локацию🏠:", reply_markup=keyboard_markup)
+	await message.answer(f"Выберите интересующую локацию🏠:", reply_markup=keyboard_markup)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('gym_id:'))
-async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
+async def inline_location_answer_callback_handler(query: types.CallbackQuery):
 	answer_data = query.data[-1:]
 	locations_info = await datawork.locations_get(answer_data)
 	try:
