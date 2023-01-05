@@ -51,7 +51,7 @@ async def coaches_index(message):
 		reply_markup=keyboard
 	)
 
-	await asyncio.sleep(6)
+	await asyncio.sleep(4)
 	await menu.menu_cmd(message)
 
 
