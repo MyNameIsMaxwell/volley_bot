@@ -15,6 +15,7 @@ current_date = datetime.now()
 today_date = current_date.strftime(f'%d %m %Y')
 today_date = today_date[:3] + month_list[int(today_date[3:5]) - 1] + today_date[5:]
 
+
 @dp.message_handler(commands=["schedule"])
 async def start_schedule_handler(message: types.Message):
 	keyboard_markup = types.InlineKeyboardMarkup(row_width=2)
@@ -31,7 +32,8 @@ async def start_schedule_handler(message: types.Message):
 	row_btns = (types.InlineKeyboardButton(text, callback_data=f"day:{data}") for text, data in text_and_data)
 	keyboard_markup.add(*row_btns)
 
-	await message.reply(f"Сегодня: {today_date} - {week_day[datetime.weekday(current_date)]} 📅\nТренировки на неделю:", reply_markup=keyboard_markup)
+	await message.reply(f"Сегодня: {today_date} - {week_day[datetime.weekday(current_date)]} 📅\nТренировки на неделю:",
+						reply_markup=keyboard_markup)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('day:'))
@@ -59,7 +61,7 @@ async def text_create(schedule, day_name):
 				for day in schedule:
 					if day['day_of_week'] == dayweek['day_of_week']:
 						text = (f"\n{' ':6}🕙Время: {day['time']}\n{' ':6}🗺Место: {day['place']}\n")
-						full_text = full_text + "    "+ text
+						full_text = full_text + "    " + text
 				week += date_info + full_text + "\n"
 		return "<b>" + week + "</b>"
 	else:

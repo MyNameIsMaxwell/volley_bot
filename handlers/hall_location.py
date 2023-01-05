@@ -38,5 +38,4 @@ async def inline_location_answer_callback_handler(query: types.CallbackQuery):
 		print(exp)
 		text = f'Unexpected callback data {answer_data!r}!'
 
-	await menu.menu_cmd(query.message)
-	await bot.delete_message(chat_id=query.message.chat.id, message_id=query.message.message_id)
+	# await bot.delete_message(chat_id=query.message.chat.id, message_id=query.message.message_id)

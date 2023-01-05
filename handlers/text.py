@@ -7,13 +7,13 @@ from loader import dp
 @dp.message_handler(content_types=['text'])
 async def get_text_messages(msg: types.Message):
     if msg.text.startswith("Расписание"):
-       await schedule.start_schedule_handler(msg)
+        await schedule.start_schedule_handler(msg)
+    elif msg.text.startswith("Записаться на"):
+        await trial_lesson.trial_lesson_handler(msg)
+    elif msg.text.startswith("О нас"):
+        await about_us.about_us_handler(msg)
     elif msg.text.startswith("Помощь"):
         await help.help_command(msg)
-    elif msg.text.startswith("Расположение"):
-       await hall_location.start_location_handler(msg)
-    elif msg.text.startswith("Тренера"):
-       await coaches.coaches_index(msg)
     elif msg.text.startswith("Прайс"):
         await price_list.price_list_handler(msg)
     elif msg.text.lower() == 'привет':
