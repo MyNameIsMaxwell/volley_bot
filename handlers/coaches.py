@@ -1,5 +1,5 @@
 import asyncio
-from aiogram import types,filters
+from aiogram import types
 from aiogram.utils.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -9,6 +9,7 @@ from handlers import menu
 
 coaches_info = datawork.coaches_get()
 coaches_callback = CallbackData("Тренер", "page")
+
 
 async def get_coaches_keyboard(page: int = 0):
 	keyboard = InlineKeyboardMarkup(row_width=1)
@@ -36,6 +37,7 @@ async def get_coaches_keyboard(page: int = 0):
 
 	return keyboard
 
+
 @dp.message_handler(commands=["coaches"])
 async def coaches_index(message):
 	coaches_data = coaches_info[0]
@@ -51,8 +53,8 @@ async def coaches_index(message):
 		reply_markup=keyboard
 	)
 
-	await asyncio.sleep(4)
-	await menu.menu_cmd(message)
+	# await asyncio.sleep(4)
+	# await menu.menu_cmd(message)
 
 
 @dp.callback_query_handler(coaches_callback.filter())
