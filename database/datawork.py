@@ -7,13 +7,26 @@ if __name__ != '__main__':
 else:
     datab = SqliteDatabase(os.path.abspath(os.path.join('./voley_db.db')))
 
+
 class Users(Model):
     id = IntegerField(null=False, primary_key=True)
     user_id = IntegerField(null=False, unique=True)
-    user_name = CharField()
+    user_name = CharField(null=False)
+    schooler = IntegerField(null=False)
 
     class Meta:
         database = datab
+
+
+class New_users(Model):
+    id = IntegerField(null=False, primary_key=True)
+    user_id = IntegerField(null=False, unique=True)
+    user_name = CharField(null=False)
+    schooler = IntegerField(null=False)
+
+    class Meta:
+        database = datab
+
 
 class Schedule(Model):
     week_day = CharField(null=False)
@@ -26,6 +39,7 @@ class Schedule(Model):
     class Meta:
         database = datab
 
+
 class Location(Model):
     short_name = CharField()
     street = CharField(null=False)
@@ -35,6 +49,7 @@ class Location(Model):
     class Meta:
         database = datab
 
+
 class Coach(Model):
     name = CharField(null=False)
     photo = CharField(null=False)
@@ -42,6 +57,7 @@ class Coach(Model):
 
     class Meta:
         database = datab
+
 
 class Price(Model):
     name = CharField(null=False)
@@ -51,26 +67,60 @@ class Price(Model):
     class Meta:
         database = datab
 
+
 cur = datab.cursor()
+
 
 def create_tables():
     Users.create_table()
+    New_users.create_table()
     Schedule.create_table()
     Location.create_table()
     Coach.create_table()
 
+
 @logger.catch()
 async def add_user(message):
     try:
-        user_exist = cur.execute("""SELECT id FROM users
+        user_exist = cur.execute("""SELECT id FROM new_users
         									WHERE user_id = ?""", (message.from_user.id,)).fetchone()
         if user_exist == None:
-            Users.create(user_id=message.from_user.id,
+            New_users.create(user_id=message.from_user.id,
                          user_name=f"{message.from_user.username} - {message.from_user.first_name} {message.from_user.last_name}"
                         )
     except Exception as exp:
         if str(exp) != "no such table: users":
             print(exp)
+
+
+async def get_user_status(message):
+    try:
+        new_user_check = cur.execute("""SELECT id FROM new_users WHERE user_id = ?""", (message.from_user.id,)).fetchone()
+        if new_user_check != None:
+            new_user = True
+            return new_user
+        else:
+            new_user = False
+            return new_user
+    except Exception as exp:
+        print(exp)
+
+
+async def schooler_change(message):
+    schooler_value = New_users.update(schooler=1).where(New_users.user_id == message.from_user.id)
+    schooler_value.execute()
+
+
+async def worker_change(message):
+    worker_value = New_users.update(schooler=0).where(New_users.user_id == message.from_user.id)
+    worker_value.execute()
+
+
+async def schooler_get(message):
+    schooler_info = cur.execute("""SELECT schooler FROM new_users
+            									WHERE user_id = ?""", (message.from_user.id,)).fetchone()
+    return int(schooler_info[0])
+
 
 async def schedule_get(week_day_value):
     schedule_list = []
@@ -93,6 +143,7 @@ async def schedule_get(week_day_value):
         schedule_list.append(day_info)
     return schedule_list
 
+
 async def locations_get(id_value=0):
     locations_list = []
     if id_value:
@@ -109,6 +160,7 @@ async def locations_get(id_value=0):
         locations_list.append(location_dict)
     return locations_list
 
+
 def coaches_get():
     coaches_list = []
     coaches_info = Coach.select()
@@ -120,4 +172,3 @@ def coaches_get():
         coaches_dict["description"] = coach.descr
         coaches_list.append(coaches_dict)
     return coaches_list
-
