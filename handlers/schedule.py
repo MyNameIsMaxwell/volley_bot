@@ -11,9 +11,12 @@ month_list = ['января', 'февраля', 'марта', 'апреля', '�
 
 week_day = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
-current_date = datetime.now()
-today_date = current_date.strftime(f'%d %m %Y')
-today_date = today_date[:3] + month_list[int(today_date[3:5]) - 1] + today_date[5:]
+
+async def current_date_func():
+	current_date_value = datetime.now()
+	today_date = current_date_value.strftime(f'%d %m %Y')
+	today_date = today_date[:3] + month_list[int(today_date[3:5]) - 1] + today_date[5:]
+	return current_date_value, today_date
 
 
 @dp.message_handler(commands=["schedule"])
@@ -32,12 +35,14 @@ async def start_schedule_handler(message: types.Message):
 	row_btns = (types.InlineKeyboardButton(text, callback_data=f"day:{data}") for text, data in text_and_data)
 	keyboard_markup.add(*row_btns)
 
+	current_date, today_date = await current_date_func()
 	await message.reply(f"Сегодня: {today_date} - {week_day[datetime.weekday(current_date)]} 📅\nТренировки на неделю:",
 						reply_markup=keyboard_markup)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('day:'))
 async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
+	new_user = await datawork.get_user_status(message=query.message)
 	answer_data = query.data[4:]
 	await query.answer(f'{answer_data}')
 	try:
@@ -46,9 +51,14 @@ async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
 	except Exception as exp:
 		print(exp)
 		text = f'В этот день у нас тренировок нет🤗'
-
-	await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html")
-	await menu.menu_cmd(query.message)
+	if new_user is True:
+		keyboard_markup = types.InlineKeyboardMarkup(row_width=1)
+		keyboard_markup.add(types.InlineKeyboardButton("Записаться на пробное занятие👍",
+												   url="https://docs.google.com/forms/d/1WUwwc9Xiv6LQDQFO6TzvbvvbIqOeVPWqklFxNFvLdKw/edit#response=ACYDBNi7m9BjZI-7ySZlWst-bQTnELpAx7AyfUwqjGWh_225xIw_aZVdLbmofDa2XIdodbk"))
+		await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html", reply_markup=keyboard_markup)
+	else:
+		await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html")
+		await menu.menu_cmd(query.message)
 
 
 async def text_create(schedule, day_name):
