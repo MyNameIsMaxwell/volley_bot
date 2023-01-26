@@ -50,7 +50,10 @@ async def inline_trainings_callback_handler(query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda c: c.data.endswith('training_items'))
 async def inline_items_callback_handler(query: types.CallbackQuery):
-	await query.message.answer("Coming soon..")
+	date_info = f"С собой на тренировку необходимо взять🏐:"
+	text = (f"\n{' ':6}🔸Удобную спортивную форму и сменную обувь\n{' ':6}🔸Бутылку с водой и полотенце\n{' ':6}🔸Хорошее настроение")
+	text = date_info + text
+	await query.message.answer(text)
 
 
 @dp.callback_query_handler(lambda c: c.data.endswith('about_team'))
