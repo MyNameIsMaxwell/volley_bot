@@ -15,4 +15,8 @@ DEFAULT_COMMANDS = (
     ('about_us', "О нас👨‍👩‍👧‍👦"),
     ('help', "Вывести справку🏐")
 )
+
 LOG_PATH = os.path.abspath(os.path.join('utils', 'logs.log'))
+
+ADMINS = os.getenv('ADMINS')
+
