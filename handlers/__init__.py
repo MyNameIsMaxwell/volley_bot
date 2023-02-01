@@ -1,5 +1,6 @@
 from . import start
 from . import schedule
+from . import sender
 from . import first_connection
 from . import trial_lesson
 from . import about_us
