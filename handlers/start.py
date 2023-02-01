@@ -27,7 +27,7 @@ async def send_video(message: types.Message):
     await datawork.worker_change(message)
     await message.reply(f'Тогда вопрос посерьезнее: <em>Заряжает ли тебя <b>такая</b> атмосфера?</em>👇', parse_mode="html")
     keyboard_markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True, one_time_keyboard=True)
-    btns_text = ('Мне интересно!🤩', 'Не очень🫤')
+    btns_text = ('Мне интересно!🤩', 'Не очень😅')
     keyboard_markup.row(*(types.KeyboardButton(text) for text in btns_text))
     volley_preview = 'BAACAgIAAxkDAAIFumO0q3u-Apjr9TcW96lztRxbE1UtAAKaJQACp2-gSeIMdWO_IrOPLQQ'
     await bot.send_chat_action(message.chat.id, action=ChatActions.UPLOAD_VIDEO)
@@ -44,7 +44,7 @@ async def send_video(message: types.Message):
     await datawork.schooler_change(message)
     await message.reply(f'Тогда вопрос посерьезнее: <em>Заряжает ли тебя <b>такая</b> атмосфера?</em>👇', parse_mode="html")
     keyboard_markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True, one_time_keyboard=True)
-    btns_text = ('Мне интересно!🤩', 'Не очень🫤')
+    btns_text = ('Мне интересно!🤩', 'Не очень😅')
     keyboard_markup.row(*(types.KeyboardButton(text) for text in btns_text))
     volley_preview = 'BAACAgIAAxkBAAIIgWO8nMK1wF9B7T6QV1CywIY7eBdPAAI9KgACW9LpSbwgjFKLDxfuLQQ'
     await bot.send_chat_action(message.chat.id, action=ChatActions.UPLOAD_VIDEO)
@@ -74,7 +74,7 @@ async def greetings_answer(message: types.Message):
                          reply_markup=keyboard_markup)
 
 
-@dp.message_handler(text='Не очень🫤')
+@dp.message_handler(text='Не очень😅')
 async def ungreetings_answer(message: types.Message):
     keyboard_markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
     btns_text = ('Хорошо! Что там у вас?', 'Все равно нет!')
@@ -106,6 +106,28 @@ async def greetings_answer(message: types.Message):
 
 
 @dp.message_handler(text='Хочу узнать больше!')
-async def greetings_answer(message: types.Message):
-    await message.reply(f'Еще раз привет✋ Я BrestVolleybot. От меня ты можешь узнать расписание тренировок на неделю, либо посмотреть материалы, которые помогут тебе лучше принимать, бить и пасовать)')
-    await menu.menu_cmd(message)
+async def more_info(message: types.Message):
+    keyboard_markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    btns_text = ('Записаться на пробное!😍', 'Пока не готов🥲')
+    keyboard_markup.row(*(types.KeyboardButton(text) for text in btns_text))
+    volley_preview = 'BAACAgIAAxkDAAIFumO0q3u-Apjr9TcW96lztRxbE1UtAAKaJQACp2-gSeIMdWO_IrOPLQQ'
+    await message.reply(f'Brest Volley - это постоянно развивающееся сообщество, которое перенимает лучший опыт и является одним из партнеров RusVolley!')
+    await bot.send_chat_action(message.chat.id, action=ChatActions.UPLOAD_VIDEO)
+    await asyncio.sleep(2)
+    await bot.send_video(message.chat.id,
+                         video=volley_preview,
+                         reply_markup=keyboard_markup)
+
+
+@dp.message_handler(text='Пока не готов🥲')
+async def more_info(message: types.Message):
+    keyboard_markup = types.InlineKeyboardMarkup(row_width=1)
+    text_and_data = (
+        ('Об основателе', 'about_team'),
+        ('О школе волейбола', 'about_school'),
+    )
+    row_btns = (types.InlineKeyboardButton(text, callback_data=f"about:{data}") for text, data in text_and_data)
+    keyboard_markup.add(*row_btns)
+
+    await bot.send_message(message.chat.id, "Узнай о <b>нас</b> и <b>наших</b> занятиях больше☀️🏐☀️",
+                           parse_mode='html', reply_markup=keyboard_markup)
