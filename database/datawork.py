@@ -23,6 +23,9 @@ class New_users(Model):
     user_id = IntegerField(null=False, unique=True)
     user_name = CharField(null=False)
     schooler = IntegerField(null=False)
+    reg_status = IntegerField(default=0)
+    train_visit = IntegerField(default=0)
+    subscription = IntegerField(default=0)
 
     class Meta:
         database = datab
@@ -86,7 +89,8 @@ async def add_user(message):
         									WHERE user_id = ?""", (message.from_user.id,)).fetchone()
         if user_exist == None:
             New_users.create(user_id=message.from_user.id,
-                         user_name=f"{message.from_user.username} - {message.from_user.first_name} {message.from_user.last_name}"
+                             user_name=f"{message.from_user.username} - {message.from_user.first_name} {message.from_user.last_name}",
+                             schooler=0
                         )
     except Exception as exp:
         if str(exp) != "no such table: users":
@@ -104,6 +108,11 @@ async def get_user_status(message):
             return new_user
     except Exception as exp:
         print(exp)
+
+
+def get_users_for_message():
+    user_list = New_users.select().where(New_users.reg_status == 0)
+    return user_list
 
 
 async def schooler_change(message):
