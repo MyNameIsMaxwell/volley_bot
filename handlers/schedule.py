@@ -1,6 +1,7 @@
 from aiogram import types
 from datetime import datetime
 
+from get_user_info import google_sheet_parse
 from loader import bot, dp
 from database import datawork
 from handlers import menu
@@ -42,7 +43,6 @@ async def start_schedule_handler(message: types.Message):
 
 @dp.callback_query_handler(lambda c: c.data.startswith('day:'))
 async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
-	new_user = await datawork.get_user_status(message=query.message)
 	answer_data = query.data[4:]
 	await query.answer(f'{answer_data}')
 	try:
@@ -51,14 +51,13 @@ async def inline_schedule_answer_callback_handler(query: types.CallbackQuery):
 	except Exception as exp:
 		print(exp)
 		text = f'В этот день у нас тренировок нет🤗'
-	if new_user is True:
-		keyboard_markup = types.InlineKeyboardMarkup(row_width=1)
-		keyboard_markup.add(types.InlineKeyboardButton("Записаться на пробное занятие👍",
-												   url="https://docs.google.com/forms/d/1WUwwc9Xiv6LQDQFO6TzvbvvbIqOeVPWqklFxNFvLdKw/edit#response=ACYDBNi7m9BjZI-7ySZlWst-bQTnELpAx7AyfUwqjGWh_225xIw_aZVdLbmofDa2XIdodbk"))
-		await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html", reply_markup=keyboard_markup)
-	else:
-		await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html")
-		await menu.menu_cmd(query.message)
+	# if new_user is True:
+	# 	keyboard_markup = types.InlineKeyboardMarkup(row_width=1)
+	# 	keyboard_markup.add(types.InlineKeyboardButton("Записаться на пробное занятие👍",
+	# 											   url="https://docs.google.com/forms/d/1WUwwc9Xiv6LQDQFO6TzvbvvbIqOeVPWqklFxNFvLdKw/edit#response=ACYDBNi7m9BjZI-7ySZlWst-bQTnELpAx7AyfUwqjGWh_225xIw_aZVdLbmofDa2XIdodbk"))
+	# 	await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html", reply_markup=keyboard_markup)
+	# else:
+	await bot.edit_message_text(text, query.message.chat.id, query.message.message_id, parse_mode="html")
 
 
 async def text_create(schedule, day_name):
