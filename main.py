@@ -1,6 +1,7 @@
 from aiogram import executor
 
 from loader import dp, scheduler
+import handlers
 
 
 if __name__ == '__main__':
