@@ -51,6 +51,24 @@ def get_newbie_users_info() -> list:
         return error
 
 
+def training_date_time_get(date):
+    try:
+        values = service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id,
+            range='Расписание!B1:H4',
+            majorDimension='COLUMNS'
+        ).execute()
+        place_id = values['values']
+        print(place_id)
+        # return place_id
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return error
+
+
+training_date_time_get(23)
+
+
 def get_non_active_users():
     """
     Функция получения списка id аккаунтов, которые не заполнили анкету
@@ -133,18 +151,20 @@ def trial_training_edit(index, status_index):
 
 async def training_status_true():
     user_id, form_status, training_status, subscription, names, usernames = get_newbie_users_info()
-    users_id = set()
+    users_training_done = set()
+    users_training_go = set()
     for index in range(0, len(user_id)):
         if training_status[index] == '2':
-            users_id.add(int(user_id[index]))
+            users_training_done.add(int(user_id[index]))
             trial_training_edit(index, '2')
-    return await loader.training_feedback(users_id)
+        if form_status[index] != '0' and training_status[index] == '0':
+            training_place = training_date_time_get(index)
+    return await loader.training_feedback(users_training_done)
 
 
 def changes_check():
     user_id, form_status, training_status, subscription, names, usernames = get_newbie_users_info()
     user_info = []
-    train_info = []
     try:
         for index in range(0, len(user_id)):
             if subscription[index] == '1':
@@ -156,7 +176,6 @@ def changes_check():
                 delete_new_user(row)
             elif training_status[index] == '1':
                 trial_training_edit(index, '1')
-
     except IndexError:
         return
 

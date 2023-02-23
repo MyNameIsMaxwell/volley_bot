@@ -18,7 +18,7 @@ DEFAULT_COMMANDS = (
 
 LOG_PATH = os.path.abspath(os.path.join('utils', 'logs.log'))
 
-ADMINS = os.getenv('ADMINS')
+ADMINS = ["814548047", "5913802330"]
 
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 

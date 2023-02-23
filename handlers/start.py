@@ -59,8 +59,8 @@ from get_user_info import google_sheet_parse
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     await GreetingsStates.lets_go.set()
-    keyboard_markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True, one_time_keyboard=True)
-    keyboard_markup.add("🏐")
+    keyboard_markup = types.ReplyKeyboardMarkup(row_width=3, one_time_keyboard=True)
+    keyboard_markup.add("""➡️  🏐  ⬅️""")
     await message.reply(f'Привет, {message.from_user.first_name}, и добро пожаловать в команду Brest Volley!🔥🙌\n\nРады видеть тебя в рядах нашего волейбольного клуба и школы волейбола!🏆🏐\n\nBrest Volley - это Клуб, объединяющий профессионалов и любителей волейбола в одно большое комьюнити!\n\nПрофессиональный подход, квалифицированные тренеры, видеоанализ техники и много другое ждет Вас в волейбольном клубе «Brest Volley»! 🔥🏆🥇\n\nА теперь жми на мяч и полетели!',
                         parse_mode="html",
                         reply_markup=keyboard_markup)
