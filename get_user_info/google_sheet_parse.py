@@ -16,8 +16,11 @@ if __name__ == '__main__':
     CREDENTIALS_FILE = os.path.abspath(os.path.join('client_secret.json'))
 else:
     CREDENTIALS_FILE = os.path.abspath(os.path.join('get_user_info/client_secret.json'))
+    # CREDENTIALS_FILE = os.path.abspath(os.path.join('client_secret.json')) #
+
 # ID Google Sheets документа (можно взять из его URL)
 spreadsheet_id = SPREADSHEET_ID
+# spreadsheet_id = '1ZzvLN-fxpvBr8NWaNnTS64zgZxe2jhdS5ju2_puMA14' #
 
 # Авторизуемся и получаем service — экземпляр доступа к API
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -51,22 +54,31 @@ def get_newbie_users_info() -> list:
         return error
 
 
-def training_date_time_get(date):
+def training_date_time_get(index):
     try:
-        values = service.spreadsheets().values().get(
+        range_names = [f'Новички!C{index + 2}', 'Расписание!B1:H4', f'Новички!F{index + 2}']
+        values = service.spreadsheets().values().batchGet(
             spreadsheetId=spreadsheet_id,
-            range='Расписание!B1:H4',
+            ranges=range_names,
             majorDimension='COLUMNS'
         ).execute()
-        place_id = values['values']
-        print(place_id)
-        # return place_id
+        user_day_choice = values['valueRanges'][0]['values'][0][0]
+        dates = values['valueRanges'][1]['values']
+        user_id = values['valueRanges'][2]['values'][0][0]
+        for day in dates:
+            if day[0] == user_day_choice:
+                values = service.spreadsheets().values().update(
+                    spreadsheetId=spreadsheet_id,
+                    range=f"Новички!C{index + 2}",
+                    valueInputOption="USER_ENTERED",
+                    body={
+                        "values": [['-1']],
+                    }
+                ).execute()
+                return {'date': day, 'user': user_id}
     except HttpError as error:
         print(f"An error occurred: {error}")
         return error
-
-
-training_date_time_get(23)
 
 
 def get_non_active_users():
@@ -152,14 +164,14 @@ def trial_training_edit(index, status_index):
 async def training_status_true():
     user_id, form_status, training_status, subscription, names, usernames = get_newbie_users_info()
     users_training_done = set()
-    users_training_go = set()
+    training_day_info = set()
     for index in range(0, len(user_id)):
         if training_status[index] == '2':
             users_training_done.add(int(user_id[index]))
             trial_training_edit(index, '2')
-        if form_status[index] != '0' and training_status[index] == '0':
-            training_place = training_date_time_get(index)
-    return await loader.training_feedback(users_training_done)
+        if form_status[index] != '0' and training_status[index] == '0' and form_status[index] != '-1':
+            training_day_info = training_date_time_get(index)
+    return await loader.training_feedback(users_training_done, training_day_info)
 
 
 def changes_check():

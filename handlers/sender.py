@@ -18,7 +18,7 @@ async def sender(message: types.Message):
 
 
 @dp.message_handler(commands=['sendfor'], user_id=config.ADMINS)
-async def sender(message: types.Message):
+async def sender_individual(message: types.Message):
     if str(message.from_user.id) in config.ADMINS:
         keyboard_markup = types.InlineKeyboardMarkup(row_width=1)
         keyboard_markup.add(types.InlineKeyboardButton(text='Записаться на пробное!😍', callback_data='trial_lesson_on'))
